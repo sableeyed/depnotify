@@ -7,13 +7,13 @@
 	<key>Label</key>
 	<string>edu.trinity.launch</string>
 	<key>Program</key>
-	<string>/var/tmp/untitled.sh</string>
+	<string>/var/tmp/depNotify.sh</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/var/tmp/depnotify.launch.err</string>
+	<string>/var/tmp/depnotify.launch.err.log</string>
 	<key>StandardOutPath</key>
-	<string>/var/tmp/depnotify.launch.out</string>
+	<string>/var/tmp/depnotify.launch.out.log</string>
 	<key>StartInterval</key>
 	<integer>10</integer>
 	<key>UserName</key>
