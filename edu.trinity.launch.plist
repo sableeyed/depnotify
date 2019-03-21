@@ -6,8 +6,10 @@
 	<string>wheel</string>
 	<key>Label</key>
 	<string>edu.trinity.launch</string>
-	<key>Program</key>
-	<string>/var/tmp/depNotify.sh</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/var/tmp/depNotify.sh</string>
+	</array>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardErrorPath</key>
