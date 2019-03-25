@@ -4,6 +4,8 @@
 <dict>
 	<key>GroupName</key>
 	<string>wheel</string>
+	<key>InitGroups</key>
+	<false/>
 	<key>Label</key>
 	<string>edu.trinity.launch</string>
 	<key>ProgramArguments</key>
@@ -20,7 +22,5 @@
 	<integer>10</integer>
 	<key>UserName</key>
 	<string>root</string>
-	<key>initGroups</key>
-	<false/>
 </dict>
 </plist>
