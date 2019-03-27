@@ -111,6 +111,7 @@ if pgrep -x "Finder" \
 		caffeinatepid=$!
 
 		killall Installer
+		pkill "Self Service"
 
 		# Register input plist 
 		sudo -u "$CURRENTUSER" defaults write "$configList" pathToPlistFile "$inputList"
