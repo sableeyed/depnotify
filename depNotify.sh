@@ -165,7 +165,7 @@ if pgrep -x "Finder" \
 	    	scutil --set HostName "$REG_FIELD_1_VALUE"
 	    	scutil --set LocalHostName "$REG_FIELD_1_VALUE"
 	    	scutil --set ComputerName "$REG_FIELD_1_VALUE"
-	    	"$JAMF_BINARY" setComputerName -name "$REG_FIELD_1_VALUE"
+	    	$JAMF_BINARY setComputerName -name "$REG_FIELD_1_VALUE"
 	    else
 	    	echo "Status: Something went wrong because DEVICE_NAME can't be empty." >> $dLOG
 	    	exit 1
@@ -179,16 +179,16 @@ if pgrep -x "Finder" \
 	    	sleep 2
 	    else #set the asset tag
 	    	echo "Status: Setting asset tag to $REG_FIELD_2_VALUE." >> $dLOG
-	    	"$JAMF_BINARY" recon -assetTag "$REG_FIELD_2_VALUE"
+	    	$JAMF_BINARY recon -assetTag "$REG_FIELD_2_VALUE"
 	    fi
 
 	    #Device Building Logic
 	    REG_FIELD_3_VALUE=$(defaults read "$inputList" "Building")
 	    if [ ! "$REG_FIELD_3_VALUE" = "" ]; then
 	    	echo "Status: Setting building to $REG_FIELD_3_VALUE" >> $dLOG
-	    	"$JAMF_BINARY" recon -building "$REG_FIELD_3_VALUE"
+	    	$JAMF_BINARY recon -building "$REG_FIELD_3_VALUE"
 	    else
-	    	echo "Something went wrong: Building Logic." >> $dLOG
+	    	echo "Something went wrong when setting BUILDING" >> $dLOG
 	    	exit 1
 	    fi
 
@@ -199,7 +199,7 @@ if pgrep -x "Finder" \
 	    	echo "Status: Setting department to $REG_FIELD_4_VALUE" >> $dLOG
 	    	"$JAMF_BINARY" recon -department "$REG_FIELD_4_VALUE"
 	    else
-	    	echo "Something went wrong: Department Logic" >> $dLOG
+	    	echo "Something went wrong when setting DEPARTMENT" >> $dLOG
 	    	exit 1
 	    fi
 
@@ -210,7 +210,7 @@ if pgrep -x "Finder" \
      		"$JAMF_BINARY" policy -event "$(echo "$POLICY" | cut -d ',' -f2)"
 		done
 
-		touch $setupDone
+		touch $setupDone #Plan to remove this but its a legacy EA until I could place the bom on already deployed machines
 		touch /var/db/receipts/edu.trinity.imaging.bom
 		echo "Status: Updating device inventory" >> $dLOG
 		$JAMF_BINARY recon
