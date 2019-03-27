@@ -2,7 +2,7 @@
 # 3/25/19 v1.1: Fix array formatting
 
 #!/bin/bash
-setupDone="/Library/Application\ Support/Jamf/setupDone"
+setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
 dLOG=/var/tmp/depnotify.log
 dLIST=/var/tmp/DEPNotify.plist
 JAMF_BINARY=/usr/local/bin/jamf
@@ -122,9 +122,10 @@ if pgrep -x "Finder" \
 		echo "Status: Performing black magic..." >> $dLOG
 
 		# Main Window Look'n'Feel
+		echo "Command: Determinate: 16" >> $dLOG
 		echo "Command: Image: /var/tmp/banner.png" >> $dLOG
 		echo "Command: MainTitle: New Mac Deployment" >> $dLOG
-		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 20-30 minutes and the machine will reboot when completed. \n \n Additional software can be found in the Self Service app" >> $dLOG
+		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 20-30 minutes and the machine will reboot when completed.\n Additional software can be found in the Self Service app" >> $dLOG
 		echo "Command: ContinueButtonRegister: Begin Registration" >> $dLOG
 		
 		# Registration Window Look'n'Feel
@@ -211,7 +212,6 @@ if pgrep -x "Finder" \
      		"$JAMF_BINARY" policy -event "$(echo "$POLICY" | cut -d ',' -f2)"
 		done
 
-		touch $setupDone #Plan to remove this but its a legacy EA until I could place the bom on already deployed machines
 		touch /var/db/receipts/edu.trinity.imaging.bom
 		echo "Status: Updating device inventory" >> $dLOG
 		$JAMF_BINARY recon
