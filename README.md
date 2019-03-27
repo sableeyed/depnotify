@@ -23,7 +23,7 @@ Since our technicians are imaging the devices before sending them to users it is
 ## TODO
 * Add FileVault deferral
 * Remove Policy Array so it can be modified without having to rebuild the package
-* Force the user to change password at the NEXT login
+* ~~Force the user to change password at the NEXT login~~
 
 ## Credits
 Thanks to [jmahlman](https://github.com/jmahlman/DEPNotify-automated) for his article on how he created this.
