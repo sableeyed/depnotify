@@ -221,6 +221,7 @@ if pgrep -x "Finder" \
 		rm -fr $inputList
 		rm -fr $configList
 		rm -fr /var/tmp/banner.png
+		pwpolicy -a admin -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
 		echo "Command: RestartNow:" >> $dLOG
 
 		rm -fr /Applications/Utilities/DEPNotify.app
