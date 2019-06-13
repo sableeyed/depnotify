@@ -1,5 +1,7 @@
 # 3/25/19 Initial Release v1
 # 3/25/19 v1.1: Fix array formatting
+# 6/03/19 v2: Fix for Adobe 2019
+# 6/13/19 v3: Fix new password not working
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
