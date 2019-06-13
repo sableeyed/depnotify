@@ -1,7 +1,6 @@
 # 3/25/19 Initial Release v1
 # 3/25/19 v1.1: Fix array formatting
 # 6/03/19 v2: Fix for Adobe 2019
-# 6/13/19 v3: Fix new password not working
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -34,69 +33,19 @@ BUILDING_ARRAY=(
 	)
 
 DEPARTMENT_ARRAY=(
-	"Academic Affairs"
-	"Academic Support"
-	"Admissions"
-	"Alumni Relations & Development"
-	"Art & Art History"
-	"Athletics"
-	"Biology"
-	"Business Office"
-	"Chemistry"
-	"Classical Studies"
-	"Collaborative for Learning & Teaching"
-	"Communication"
-	"Computer Science"
-	"Counseling Services"
-	"Dean of Students"
-	"Economics"
-	"Education"
-	"Endowments"
-	"Engineering"
-	"English"
-	"Environmental Health & Safety"
-	"Facilities Services"
-	"Finance & Administration"
-	"Geosciences"
-	"Health Care Administration"
-	"Health Services"
-	"History"
-	"Human Communication & Theatre"
-	"Human Resources"
 	"Information Technology Services"
-	"Library"
-	"Mathematics"
-	"Modern Languages & Literatures"
-	"Music"
-	"Philosophy"
-	"Physics & Astronomy"
-	"Political Science"
-	"President's Office"
-	"Psychology"
-	"Purchasing"
-	"Registrar"
-	"Religion"
-	"Residential Life"
-	"Risk Management & Insurance"
-	"School of Business"
-	"Sociology & Anthropology"
-	"Strategic Communications & Marketing"
-	"Student Financial Services"
-	"Tiger Card Office"
-	"Trinitonian"
-	"Trinity University Press"
-	"TUPD"
 	"Other"
 	)
 
 POLICY_ARRAY=(
+	"Binding to Active Directory,ADBIND"
   	"Installing Google Chrome,CHROME"
   	"Installing Mozilla Firefox,FIREFOX"
   	"Installing VLC Media Player,VLC"
   	"Installing Java Runtime Environment,JRE"
   	"Installing Adobe Flash Player,FLASH"
 	"Installing Microsoft Office 2019,O2019"
-	"Installing BitDefender,BDFS"
+	"Installing BitDefender,BDL"
 	"Installing KACE Agent,KACE"
 	"Enabling Remote Management,SCRIPTS"
 	"Installing OS Updates,UPDATES"
@@ -124,7 +73,8 @@ if pgrep -x "Finder" \
 		echo "Status: Performing black magic..." >> $dLOG
 
 		# Main Window Look'n'Feel
-		echo "Command: Determinate: 16" >> $dLOG
+		echo "Command: Determinate: 17" >> $dLOG
+		echo "Command: WindowStyle: NotMovable" >> $dLOG
 		echo "Command: Image: /var/tmp/banner.png" >> $dLOG
 		echo "Command: MainTitle: New Mac Deployment" >> $dLOG
 		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 20-30 minutes and the machine will reboot when completed.\n Additional software can be found in the Self Service app" >> $dLOG
@@ -155,7 +105,7 @@ if pgrep -x "Finder" \
 
 
 		# Open DepNotify
-	    sudo -u "$CURRENTUSER" /Applications/Utilities/DEPNotify.app/Contents/MacOS/DEPNotify &
+	    sudo -u "$CURRENTUSER" /Applications/Utilities/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 	    
 	    while [ ! -f "$REGISTRATION_DONE" ]; do
 	    	echo "$(date "+%a %h %d %H:%M:%S"): Waiting on completion of registration" >> $dLOG
@@ -224,7 +174,6 @@ if pgrep -x "Finder" \
 		rm -fr $inputList
 		rm -fr $configList
 		rm -fr /var/tmp/banner.png
-		pwpolicy -a admin -p password -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
 		echo "Command: RestartNow:" >> $dLOG
 
 		rm -fr /Applications/Utilities/DEPNotify.app
