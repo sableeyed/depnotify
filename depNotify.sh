@@ -2,6 +2,8 @@
 # 3/25/19 v1.1: Fix array formatting
 # 6/03/19 v2: Fix for Adobe 2019
 # 6/13/19 v3: Fix new password not working
+# 6/?/19 v4: I forgot to make a changelog
+# 7/11/2019 v5: LDAP has been integrated, remove asset tag option and replace with asignee AD username field
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -127,7 +129,7 @@ if pgrep -x "Finder" \
 		echo "Command: Determinate: 16" >> $dLOG
 		echo "Command: Image: /var/tmp/banner.png" >> $dLOG
 		echo "Command: MainTitle: New Mac Deployment" >> $dLOG
-		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 20-30 minutes and the machine will reboot when completed.\n Additional software can be found in the Self Service app" >> $dLOG
+		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 25 minutes and the machine will reboot when completed.\n Additional software can be found in the Self Service app" >> $dLOG
 		echo "Command: ContinueButtonRegister: Begin Registration" >> $dLOG
 		
 		# Registration Window Look'n'Feel
@@ -139,9 +141,10 @@ if pgrep -x "Finder" \
 		sudo -u "$CURRENTUSER" defaults write "$configList" textField1Placeholder "DEPT-USER"
 		sudo -u "$CURRENTUSER" defaults write "$configList" textField1IsOptional -bool false
 
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Label "Asset Tag"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Placeholder "08136249"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2IsOptional -bool true
+		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Label "Assigned User"
+		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Placeholder "mkotara"
+		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Bubble -array "Criteria" "Please enter the user's AD username"
+		sudo -u "$CURRENTUSER" defaults write "$configList" textField2IsOptional -bool false
 
 		sudo -u "$CURRENTUSER" defaults write "$configList" popupButton1Label "Building"
 		for BUILDING_ARRAY in "${BUILDING_ARRAY[@]}"; do
@@ -176,14 +179,14 @@ if pgrep -x "Finder" \
 	    fi
 
 	    # Asset Tag Logic
-	    REG_FIELD_2_VALUE=$(defaults read "$inputList" "Asset Tag")
+	    REG_FIELD_2_VALUE=$(defaults read "$inputList" "Assigned User")
 	    REG_FIELD_2_OPTIONAL=$(defaults read "$configList" "textField2IsOptional")
 	    if [ "$REG_FIELD_2_OPTIONAL" = 1 ] && [ "$REG_FIELD_2_VALUE" = "" ]; then
-	    	echo "Status: Asset tag was left empty. Skipping..." >> $dLOG
+	    	echo "Status: Asignee was left empty... Skipping" >> $dLOG
 	    	sleep 2
 	    else #set the asset tag
-	    	echo "Status: Setting asset tag to $REG_FIELD_2_VALUE." >> $dLOG
-	    	$JAMF_BINARY recon -assetTag "$REG_FIELD_2_VALUE"
+	    	echo "Status: Setting assigne to $REG_FIELD_2_VALUE." >> $dLOG
+	    	$JAMF_BINARY recon -endUsername "$REG_FIELD_2_VALUE"
 	    fi
 
 	    #Device Building Logic
@@ -224,7 +227,7 @@ if pgrep -x "Finder" \
 		rm -fr $inputList
 		rm -fr $configList
 		rm -fr /var/tmp/banner.png
-		pwpolicy -a admin -p password -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
+		pwpolicy -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
 		echo "Command: RestartNow:" >> $dLOG
 
 		rm -fr /Applications/Utilities/DEPNotify.app
