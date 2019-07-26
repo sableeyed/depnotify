@@ -11,7 +11,7 @@ udid=$(/usr/sbin/system_profiler SPHardwareDataType | /usr/bin/awk '/UUID/ { pri
 install_date=$(/usr/bin/curl -X GET --user "$apiUser:$apiPass" "$jssURL/JSSResource/computers/udid/$udid" | /usr/bin/xmllint --xpath "//name[text()='Installation Date']/following-sibling::value/text()" -)
 if [ ! "$install_date" ]; then #find install date from file
 	if [ -f /var/db/receipts/edu.trinity.enrollment.plist ]; then
-		date=$(/usr/bin/defaults read /var/db/receipts/edu.trinity.enrollment.plist InstallDate | awk '{print $1"\ "$2}')
+		date=$(/usr/bin/defaults read /var/db/receipts/edu.trinity.enrollment.plist InstallDate | /usr/bin/awk '{print $1"\ "$2}')
 		/bin/echo "<result>$date</result>"
 	fi
 fi 
