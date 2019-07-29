@@ -16,7 +16,7 @@ Since our technicians are imaging the devices before sending them to users it is
 3. Mac will auto login to the desktop
 4. Wait
 5. DEPNotify will start within a minute
-6. Technician enters Computer name, asset tag, building and department
+6. Technician enters Computer name, assignee AD name, building and department
 7. Device will will self image and restart when finished
 8. Technicians can install additional software in self service or deploy the device
 
