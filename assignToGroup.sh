@@ -8,7 +8,7 @@ computerName=$(hostname)
 xmlHeader="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
 apiData="<computer_group><id>${groupID}</id><name>Group name</name><computer_additions><computer><name>$computerName</name></computer></computer_additions></computer_group>"
 
-curl -sSkiu ${apiUser}:${apiPass} "${jssURL}/${apiURL}" \
+/usr/bin/curl -sSkiu ${apiUser}:${apiPass} "${jssURL}/${apiURL}" \
     -H "Content-Type: text/xml" \
     -d "${xmlHeader}${apiData}" \
     -X PUT  > /dev/null
