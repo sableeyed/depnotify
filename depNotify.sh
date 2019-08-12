@@ -4,6 +4,8 @@
 # 6/13/19 v3: Fix new password not working
 # 6/?/19 v4: I forgot to make a changelog
 # 7/11/2019 v5: LDAP has been integrated, remove asset tag option and replace with asignee AD username field
+# 8/2/2019 v6: updates are breaking on some machines. Disabling for now
+# 8/12/2019 v7: Assigns computer to "Faculty+Staff Machines" static group.
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -101,7 +103,7 @@ POLICY_ARRAY=(
 	"Installing BitDefender,BDFS"
 	"Installing KACE Agent,KACE"
 	"Enabling Remote Management,SCRIPTS"
-	"Installing OS Updates,UPDATES"
+	"Adding to Faculty/Staff Group,FACSTAFF"
 	)
 
 if [ -f "${setupDone}" ]; then exit 0; fi
