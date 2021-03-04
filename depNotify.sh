@@ -6,6 +6,9 @@
 # 7/11/2019 v5: LDAP has been integrated, remove asset tag option and replace with asignee AD username field
 # 8/2/2019 v6: updates are breaking on some machines. Disabling for now
 # 8/12/2019 v7: Assigns computer to "Faculty+Staff Machines" static group.
+# 8/16/2019 v8: Add admin account for user initiated enrollment imaging package
+# 3/2/2021 v9: Add new building/update for M1 Macs (check and install Rosetta)
+# TODO: Bitdefender released a package for M1 Macs, so I need to differentiate between the 2
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -17,6 +20,10 @@ inputList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotifyUserInput
 configList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotify.plist"
 BANNER_IMG="/var/tmp/banner.png"
 REGISTRATION_DONE="/var/tmp/com.depnotify.registration.done"
+# Thanks rtrouton
+OLDIFS=$IFS
+IFS='.' read osvers_major osvers_minor osvers_dot_version <<< "$(/usr/bin/sw_vers -productVersion)"
+IFS=$OLDIFS
 
 BUILDING_ARRAY=(
 	"Chapman Center"
@@ -35,6 +42,7 @@ BUILDING_ARRAY=(
 	"Ruth Taylor Theatre"
 	"Storch Memorial Building"
 	"William Bell Center"
+	"East King's Highway"
 	)
 
 DEPARTMENT_ARRAY=(
@@ -94,19 +102,31 @@ DEPARTMENT_ARRAY=(
 	)
 
 POLICY_ARRAY=(
+	"Adding to Faculty/Staff Group,FACSTAFF"
   	"Installing Google Chrome,CHROME"
   	"Installing Mozilla Firefox,FIREFOX"
   	"Installing VLC Media Player,VLC"
   	"Installing Java Runtime Environment,JRE"
-  	"Installing Adobe Flash Player,FLASH"
 	"Installing Microsoft Office 2019,O2019"
 	"Installing BitDefender,BDFS"
 	"Installing KACE Agent,KACE"
 	"Enabling Remote Management,SCRIPTS"
-	"Adding to Faculty/Staff Group,FACSTAFF"
 	)
 
 if [ -f "${setupDone}" ]; then exit 0; fi
+
+if [[ ${osvers_major} -ge 11 ]]; then
+	#check if Rosetta is needed by testing CPU
+	processor=$(/usr/sbin/sysctl -n machdep.cpu.brand_string | grep -o "Intel")
+
+	if [[ -n "$processor" ]]; then
+		echo "Rosetta not needed on intel"
+	else
+		if [[ ! -f "/Library/Apple/System/Library/Library/LaunchDaemons/com.apple.oahd.plist" ]]; then
+			/usr/sbin/softwareupdate --install-rosetta --agree-to-license
+		fi
+	fi
+fi
 
 if pgrep -x "Finder" \
 	&& pgrep -x "Dock" \
