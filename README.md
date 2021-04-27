@@ -21,7 +21,7 @@ Since our technicians are imaging the devices before sending them to users it is
 8. Technicians can install additional software in self service or deploy the device
 
 ## TODO
-* Add FileVault deferral
+* ~Add FileVault~
 * Remove Policy Array so it can be modified without having to rebuild the package
 * ~~Force the user to change password at the NEXT login~~
 
