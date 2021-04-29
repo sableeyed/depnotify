@@ -8,7 +8,8 @@
 # 8/12/2019 v7: Assigns computer to "Faculty+Staff Machines" static group.
 # 8/16/2019 v8: Add admin account for user initiated enrollment imaging package
 # 3/2/2021 v9: Add new building/update for M1 Macs (check and install Rosetta)
-# TODO: Bitdefender released a package for M1 Macs, so I need to differentiate between the 2
+# 4/14/2021 v10: Filevault2
+# 4/29/2021 v11: Hopefully Rosetta is fixed with a preinstall script
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -20,10 +21,7 @@ inputList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotifyUserInput
 configList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotify.plist"
 BANNER_IMG="/var/tmp/banner.png"
 REGISTRATION_DONE="/var/tmp/com.depnotify.registration.done"
-# Thanks rtrouton
-OLDIFS=$IFS
-IFS='.' read osvers_major osvers_minor osvers_dot_version <<< "$(/usr/bin/sw_vers -productVersion)"
-IFS=$OLDIFS
+
 
 BUILDING_ARRAY=(
 	"Chapman Center"
@@ -110,23 +108,11 @@ POLICY_ARRAY=(
 	"Installing Microsoft Office 2019,O2019"
 	"Installing BitDefender,BDFS"
 	"Installing KACE Agent,KACE"
+	"Enabling Filevault,FILEVAULT2"
 	"Enabling Remote Management,SCRIPTS"
 	)
 
 if [ -f "${setupDone}" ]; then exit 0; fi
-
-if [[ ${osvers_major} -ge 11 ]]; then
-	#check if Rosetta is needed by testing CPU
-	processor=$(/usr/sbin/sysctl -n machdep.cpu.brand_string | grep -o "Intel")
-
-	if [[ -n "$processor" ]]; then
-		echo "Rosetta not needed on intel"
-	else
-		if [[ ! -f "/Library/Apple/System/Library/Library/LaunchDaemons/com.apple.oahd.plist" ]]; then
-			/usr/sbin/softwareupdate --install-rosetta --agree-to-license
-		fi
-	fi
-fi
 
 if pgrep -x "Finder" \
 	&& pgrep -x "Dock" \
@@ -148,7 +134,7 @@ if pgrep -x "Finder" \
 		echo "Status: Performing black magic..." >> $dLOG
 
 		# Main Window Look'n'Feel
-		echo "Command: Determinate: 16" >> $dLOG
+		echo "Command: Determinate: 17" >> $dLOG
 		echo "Command: Image: /var/tmp/banner.png" >> $dLOG
 		echo "Command: MainTitle: New Mac Deployment" >> $dLOG
 		echo "Command: MainText: Make sure the device is using a wired connection before proceeding. This process should take approximately 25 minutes and the machine will reboot when completed.\n Additional software can be found in the Self Service app" >> $dLOG
