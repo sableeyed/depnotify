@@ -1,4 +1,6 @@
 #!/bin/bash
+user=$(ls /Users | awk '$1 != "Shared" && $1 != ".localized" {print $1}' | tr -d "\n")
+sed -i '' "s/CURRENTUSER=/CURRENTUSER=$user/" /private/var/tmp/depNotify.sh
 chmod a+x /var/tmp/depNotify.sh
 chmod 644 /Library/LaunchDaemons/edu.trinity.launch.plist
 chown root:wheel /Library/LaunchDaemons/edu.trinity.launch.plist

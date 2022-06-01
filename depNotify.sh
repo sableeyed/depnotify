@@ -16,7 +16,7 @@ setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attri
 dLOG=/var/tmp/depnotify.log
 dLIST=/var/tmp/DEPNotify.plist
 JAMF_BINARY=/usr/local/bin/jamf
-CURRENTUSER=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+CURRENTUSER=
 inputList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotifyUserInput.plist"
 configList="/Users/$CURRENTUSER/Library/Preferences/menu.nomad.DEPNotify.plist"
 BANNER_IMG="/var/tmp/banner.png"
