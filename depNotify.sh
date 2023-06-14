@@ -10,6 +10,8 @@
 # 3/2/2021 v9: Add new building/update for M1 Macs (check and install Rosetta)
 # 4/14/2021 v10: Filevault2
 # 4/29/2021 v11: Hopefully Rosetta is fixed with a preinstall script
+# ? v12: fix for python 2 removal
+# 6/14/2023 v13: fix for relative path issues
 
 #!/bin/bash
 setupDone="/Library/Application\ Support/Jamf/setupDone" #Legacy Extension Attribute to check if DEPNotify ran
@@ -41,6 +43,7 @@ BUILDING_ARRAY=(
 	"Storch Memorial Building"
 	"William Bell Center"
 	"East King's Highway"
+	"Dicke Hall"
 	)
 
 DEPARTMENT_ARRAY=(
@@ -114,22 +117,22 @@ POLICY_ARRAY=(
 
 if [ -f "${setupDone}" ]; then exit 0; fi
 
-if pgrep -x "Finder" \
-	&& pgrep -x "Dock" \
+if /usr/bin/pgrep -x "Finder" \
+	&& /usr/bin/pgrep -x "Dock" \
 	&& [ "$CURRENTUSER" != "_mbsetupuser" ] \
 	&& [ ! -f "${setupDone}" ]; then
 
 		/usr/bin/caffeinate -d -i -m -u -s &
 		caffeinatepid=$!
 
-		killall Installer
-		pkill "Self Service"
+		/usr/bin/killall Installer
+		/usr/bin/pkill "Self Service"
 
 		# Register input plist 
-		sudo -u "$CURRENTUSER" defaults write "$configList" pathToPlistFile "$inputList"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" pathToPlistFile "$inputList"
 
 		# Global app preferences
-		sudo -u "$CURRENTUSER" defaults write "$configList" statusTextAlignment center
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" statusTextAlignment center
 
 		echo "Status: Performing black magic..." >> $dLOG
 
@@ -141,45 +144,45 @@ if pgrep -x "Finder" \
 		echo "Command: ContinueButtonRegister: Begin Registration" >> $dLOG
 		
 		# Registration Window Look'n'Feel
-		sudo -u "$CURRENTUSER" defaults write "$configList" registrationTitleMain "Enter Device Details"
-		sudo -u "$CURRENTUSER" defaults write "$configList" registrationPicturePath "$BANNER_IMG"
-		sudo -u "$CURRENTUSER" defaults write "$configList" registrationButtonLabel "Register & Image Device"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" registrationTitleMain "Enter Device Details"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" registrationPicturePath "$BANNER_IMG"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" registrationButtonLabel "Register & Image Device"
 
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField1Label "Device Name"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField1Placeholder "DEPT-USER"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField1IsOptional -bool false
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField1Label "Device Name"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField1Placeholder "DEPT-USER"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField1IsOptional -bool false
 
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Label "Assigned User"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Placeholder "mkotara"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2Bubble -array "Criteria" "Please enter the user's AD username"
-		sudo -u "$CURRENTUSER" defaults write "$configList" textField2IsOptional -bool false
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField2Label "Assigned User"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField2Placeholder "mkotara"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField2Bubble -array "Criteria" "Please enter the user's AD username"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" textField2IsOptional -bool false
 
-		sudo -u "$CURRENTUSER" defaults write "$configList" popupButton1Label "Building"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" popupButton1Label "Building"
 		for BUILDING_ARRAY in "${BUILDING_ARRAY[@]}"; do
-			sudo -u "$CURRENTUSER" defaults write "$configList" popupButton1Content -array-add "$BUILDING_ARRAY"
+			/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" popupButton1Content -array-add "$BUILDING_ARRAY"
 		done
 
-		sudo -u "$CURRENTUSER" defaults write "$configList" popupButton2Label "Department"
+		/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" popupButton2Label "Department"
 		for DEPARTMENT_ARRAY in "${DEPARTMENT_ARRAY[@]}"; do
-			sudo -u "$CURRENTUSER" defaults write "$configList" popupButton2Content -array-add "$DEPARTMENT_ARRAY"
+			/usr/bin/sudo -u "$CURRENTUSER" defaults write "$configList" popupButton2Content -array-add "$DEPARTMENT_ARRAY"
 		done
 
 
 		# Open DepNotify
-	    sudo -u "$CURRENTUSER" /Applications/Utilities/DEPNotify.app/Contents/MacOS/DEPNotify &
+	    /usr/bin/sudo -u "$CURRENTUSER" /Applications/Utilities/DEPNotify.app/Contents/MacOS/DEPNotify &
 	    
 	    while [ ! -f "$REGISTRATION_DONE" ]; do
-	    	echo "$(date "+%a %h %d %H:%M:%S"): Waiting on completion of registration" >> $dLOG
-	    	sleep 2
+	    	echo "$(/bin/date "+%a %h %d %H:%M:%S"): Waiting on completion of registration" >> $dLOG
+	    	/bin/sleep 2
 	    done
 
 	    #Computer Name Logic
-	    REG_FIELD_1_VALUE=$(defaults read "$inputList" "Device Name") #This field is mandatory
+	    REG_FIELD_1_VALUE=$(/usr/bin/defaults read "$inputList" "Device Name") #This field is mandatory
 	    if [ ! "$REG_FIELD_1_VALUE" = "" ]; then
 	    	echo "Status: Setting computer name to $REG_FIELD_1_VALUE" >> $dLOG
-	    	scutil --set HostName "$REG_FIELD_1_VALUE"
-	    	scutil --set LocalHostName "$REG_FIELD_1_VALUE"
-	    	scutil --set ComputerName "$REG_FIELD_1_VALUE"
+	    	/usr/sbin/scutil --set HostName "$REG_FIELD_1_VALUE"
+	    	/usr/sbin/scutil --set LocalHostName "$REG_FIELD_1_VALUE"
+	    	/usr/sbin/scutil --set ComputerName "$REG_FIELD_1_VALUE"
 	    	$JAMF_BINARY setComputerName -name "$REG_FIELD_1_VALUE"
 	    else
 	    	echo "Status: Something went wrong because DEVICE_NAME can't be empty." >> $dLOG
@@ -187,18 +190,18 @@ if pgrep -x "Finder" \
 	    fi
 
 	    # Asset Tag Logic
-	    REG_FIELD_2_VALUE=$(defaults read "$inputList" "Assigned User")
-	    REG_FIELD_2_OPTIONAL=$(defaults read "$configList" "textField2IsOptional")
+	    REG_FIELD_2_VALUE=$(/usr/bin/defaults read "$inputList" "Assigned User")
+	    REG_FIELD_2_OPTIONAL=$(/usr/bin/defaults read "$configList" "textField2IsOptional")
 	    if [ "$REG_FIELD_2_OPTIONAL" = 1 ] && [ "$REG_FIELD_2_VALUE" = "" ]; then
 	    	echo "Status: Asignee was left empty... Skipping" >> $dLOG
-	    	sleep 2
+	    	/bin/sleep 2
 	    else #set the asset tag
 	    	echo "Status: Setting assigne to $REG_FIELD_2_VALUE." >> $dLOG
 	    	$JAMF_BINARY recon -endUsername "$REG_FIELD_2_VALUE"
 	    fi
 
 	    #Device Building Logic
-	    REG_FIELD_3_VALUE=$(defaults read "$inputList" "Building")
+	    REG_FIELD_3_VALUE=$(/usr/bin/defaults read "$inputList" "Building")
 	    if [ ! "$REG_FIELD_3_VALUE" = "" ]; then
 	    	echo "Status: Setting building to $REG_FIELD_3_VALUE" >> $dLOG
 	    	$JAMF_BINARY recon -building "$REG_FIELD_3_VALUE"
@@ -209,7 +212,7 @@ if pgrep -x "Finder" \
 
 
 	    #Device Department Logic
-	    REG_FIELD_4_VALUE=$(defaults read "$inputList" "Department")
+	    REG_FIELD_4_VALUE=$(/usr/bin/defaults read "$inputList" "Department")
 	    if [ ! "$REG_FIELD_4_VALUE" = "" ]; then
 	    	echo "Status: Setting department to $REG_FIELD_4_VALUE" >> $dLOG
 	    	"$JAMF_BINARY" recon -department "$REG_FIELD_4_VALUE"
@@ -221,21 +224,21 @@ if pgrep -x "Finder" \
 
 	    #Begin device imaging
 	    for POLICY in "${POLICY_ARRAY[@]}"; do
-  			echo "Status: $(echo "$POLICY" | cut -d ',' -f1)" >> "$dLOG"
-     		"$JAMF_BINARY" policy -event "$(echo "$POLICY" | cut -d ',' -f2)"
+  			echo "Status: $(echo "$POLICY" | /usr/bin/cut -d ',' -f1)" >> "$dLOG"
+     		"$JAMF_BINARY" policy -event "$(echo "$POLICY" | /usr/bin/cut -d ',' -f2)"
 		done
 
-		touch /var/db/receipts/edu.trinity.imaging.bom
+		/usr/bin/touch /var/db/receipts/edu.trinity.imaging.bom
 		echo "Status: Updating device inventory" >> $dLOG
 		$JAMF_BINARY recon
 		echo "Status: Cleaning up files and restarting the system" >> $dLOG
-		sleep 2
+		/bin/sleep 2
 		kill $caffeinatepid
 		rm -fr /Library/LaunchDaemons/edu.trinity.launch.plist
 		rm -fr $inputList
 		rm -fr $configList
 		rm -fr /var/tmp/banner.png
-		pwpolicy -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
+		/usr/bin/pwpolicy -u "$CURRENTUSER" -setpolicy "newPasswordRequired=1"
 		echo "Command: RestartNow:" >> $dLOG
 
 		rm -fr /Applications/Utilities/DEPNotify.app
